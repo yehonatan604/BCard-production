@@ -20,9 +20,9 @@ const schema = new Schema({
         ...DEFAULT_STRING_VALIDATION,
         match: RegExp(passwordRegex),
     },
-    classCode: DEFAULT_ID_VALIDATION("classCode"),
+    group: DEFAULT_ID_VALIDATION("group"),
     isVerified: DEFAULT_BOOLEAN_VALIDATION_OPTIONAL,
 });
 
-const Admin = model("admin", schema);
-export default Admin;
+const Op = model("op", schema);
+export default Op;

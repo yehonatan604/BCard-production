@@ -1,18 +1,18 @@
 export const userRoles = {
     USER: 100,
     BIZ: 200,
-    SUB_ADMIN: 300,
-    ADMIN: 500,
-    SUPER_ADMIN: 900,
+    ADMIN: 300,
+    OP: 500,
+    OWNER: 900,
 
     reversed: {
         100: "USER",
         200: "BIZ",
-        300: "SUB_ADMIN",
-        500: "ADMIN",
-        900: "SUPER_ADMIN",
+        300: "ADMIN",
+        500: "OP",
+        900: "OWNER",
     },
 
-    codesArray: [896597, 395286, 243987, 932616, 592391],
-    keysArray: ["USER", "BIZ", "SUB_ADMIN", "ADMIN", "SUPER_ADMIN"]
+    codesArray: [100, 200, 300, 500, 900],
+    keysArray: ["USER", "BIZ", "ADMIN", "OP", "OWNER"],
 }

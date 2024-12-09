@@ -1,13 +1,15 @@
 import { Schema, model } from "mongoose";
 import Address from "../../shared/models/Address.js"
 import Image from "../../shared/models/Image.js"
-import Name from "../../shared/models/Name.js"
 import { DEFAULT_STRING_VALIDATION } from "../../shared/validations/mongoose/String.js";
-import { emailRegex, israeliPhoneRegex, passwordRegex } from "../../helpers/regex.js";
+import { emailRegex, israeliPhoneRegex, urlRegex } from "../../helpers/regex.js";
 import { DEFAULT_ID_VALIDATION } from "../../shared/validations/mongoose/Id.js";
+import { DEFAULT_NUMBER_VALIDATION_OPTIONAL } from "../../shared/validations/mongoose/Number.js";
 
 const schema = new Schema({
-    name: Name,
+    title: DEFAULT_STRING_VALIDATION,
+    subtitle: DEFAULT_STRING_VALIDATION,
+    description: DEFAULT_STRING_VALIDATION,
     phone: {
         ...DEFAULT_STRING_VALIDATION,
         match: RegExp(israeliPhoneRegex),
@@ -15,16 +17,18 @@ const schema = new Schema({
     email: {
         ...DEFAULT_STRING_VALIDATION,
         match: RegExp(emailRegex),
-        unique: true,
     },
-    password: {
+    address: Address,
+    web: {
         ...DEFAULT_STRING_VALIDATION,
-        match: RegExp(passwordRegex),
+        match: RegExp(urlRegex),
     },
     image: Image,
-    address: Address,
+    bizNumber: DEFAULT_NUMBER_VALIDATION_OPTIONAL,
+    likes: [DEFAULT_ID_VALIDATION("User")],
+    userId: DEFAULT_ID_VALIDATION("User"),
     op: DEFAULT_ID_VALIDATION("Op"),
 });
 
-const User = model("user", schema);
-export default User;
+const Card = model("card", schema);
+export default Card;

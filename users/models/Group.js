@@ -8,5 +8,5 @@ const schema = new Schema({
     endDate: DEFAULT_STRING_VALIDATION,
 });
 
-const ClassCode = model("classCode", schema);
-export default ClassCode;
+const Group = model("group", schema);
+export default Group;

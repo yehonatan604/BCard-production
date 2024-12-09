@@ -1,4 +1,4 @@
-import { envService } from "../../Env.service.js";
+import { envService } from "../../Env/envService.js";
 
 export const registerMail = (email, name, token) => {
     const { BASE_URL, ONLINE_BASE_URL, ENVIRONMENT } = envService;

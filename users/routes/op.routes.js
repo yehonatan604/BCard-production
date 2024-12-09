@@ -1,7 +1,7 @@
 import { Router } from "express";
 import auth from "../../middleware/auth.js";
 import { statusCodes } from "../../helpers/statusCodes.js";
-import { register, login, updateOne, deleteOne, getAll, getOne, changeBusinessStatus } from "../services/userDataAccessService.js";
+import { register, verify, updateOne, deleteOne, getAll, getOne } from "../services/opDataAccessService.js";
 import { minRole } from "../../middleware/minRole.js";
 import { userRoles } from "../../helpers/roles.js";
 import { isUser } from "../../middleware/isUser.js";
@@ -12,25 +12,25 @@ const { CREATED, INTERNAL_SERVER_ERROR } = statusCodes;
 
 router.post("/", async (req, res) => {
     try {
-        const user = await register(req.body);
-        return res.status(CREATED).send(user);
+        const op = await register(req.body);
+        return res.status(CREATED).send(op);
     } catch (error) {
         return handleError(res, error.status || INTERNAL_SERVER_ERROR, error.message);
     }
 });
 
-router.post("/login", async (req, res) => {
+router.post("/verify", async (req, res) => {
     try {
-        const token = await login(req.body);
+        const token = await verify(req.body);
         return res.send(token);
     } catch (error) {
         return handleError(res, error.status || INTERNAL_SERVER_ERROR, error.message);
     }
 });
 
-router.get("/", auth, minRole(userRoles.SUB_ADMIN), async (req, res) => {
+router.get("/", auth, minRole(userRoles.OP), async (req, res) => {
     try {
-        const users = await getAll(req.user.op);
+        const users = await getAll();
         return res.send(users);
     } catch (error) {
         return handleError(res, error.status || INTERNAL_SERVER_ERROR, error.message);
@@ -39,7 +39,7 @@ router.get("/", auth, minRole(userRoles.SUB_ADMIN), async (req, res) => {
 
 router.get("/:id", auth, isUser, async (req, res) => {
     try {
-        const user = await getOne(req.params.id, req.user.op);
+        const user = await getOne(req.params.id);
         return res.send(user);
     } catch (error) {
         return handleError(res, error.status || INTERNAL_SERVER_ERROR, error.message);
@@ -48,17 +48,8 @@ router.get("/:id", auth, isUser, async (req, res) => {
 
 router.put("/:id", auth, isUser, async (req, res) => {
     try {
-        const newUser = await updateOne(req.params.id, req.body, req.user.op);
+        const newUser = await updateOne(req.params.id, req.body);
         return res.send(newUser);
-    } catch (error) {
-        return handleError(res, error.status || INTERNAL_SERVER_ERROR, error.message);
-    }
-});
-
-router.patch("/:id", auth, minRole(userRoles.SUB_ADMIN), async (req, res) => {
-    try {
-        const user = await changeBusinessStatus(req.params.id, req.user.op);
-        return res.send(user);
     } catch (error) {
         return handleError(res, error.status || INTERNAL_SERVER_ERROR, error.message);
     }
@@ -66,7 +57,7 @@ router.patch("/:id", auth, minRole(userRoles.SUB_ADMIN), async (req, res) => {
 
 router.delete("/:id", auth, isUser, async (req, res) => {
     try {
-        const user = await deleteOne(req.params.id, req.user.op);
+        const user = await deleteOne(req.params.id);
         return res.send(user);
     } catch (error) {
         return handleError(res, error.status || INTERNAL_SERVER_ERROR, error.message);
