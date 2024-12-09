@@ -23,8 +23,12 @@ const register = async (data, opId) => {
         user.password = await hashPassword(user.password);
         user = new User(data);
         user = await user.save();
+        user = pick(user, ["name", "email", "op"])
 
-        return Promise.resolve(pick(user, ["name", "email", "op"]));
+        const role = new UserRole({ user: user._id, role: userRoles.USER || userRoles.USER });
+        role = await role.save();
+
+        return Promise.resolve({ user, role });
     } catch (error) {
         return handleError(res, BAD_REQUEST, error.message);
     }

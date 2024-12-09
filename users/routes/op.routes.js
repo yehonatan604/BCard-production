@@ -1,13 +1,13 @@
 import { Router } from "express";
 import auth from "../../middleware/auth.js";
 import { statusCodes } from "../../helpers/statusCodes.js";
-import { register, verify, updateOne, deleteOne, getAll, getOne } from "../services/opDataAccessService.js";
 import { minRole } from "../../middleware/minRole.js";
 import { userRoles } from "../../helpers/roles.js";
 import { isUser } from "../../middleware/isUser.js";
 import { handleError } from "../../helpers/handleError.js";
 import { validate } from "../../middleware/validation.js";
 import { opSchema } from "../validations/registerOpSchema.js";
+import { register, verify, updateOne, deleteOne, getAll, getOne } from "../services/opDataAccessService.js";
 
 const router = Router();
 const { CREATED, INTERNAL_SERVER_ERROR } = statusCodes;

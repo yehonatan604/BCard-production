@@ -27,14 +27,8 @@ const register = async (data) => {
 
         op = new Op(data);
         op = await op.save();
-        op = pick(op, ["name", "email"]);
 
-        const response = {
-            message: "Admin registered successfully. please check your email to verify your account",
-            admin: op,
-        };
-
-        return Promise.resolve(response);
+        return Promise.resolve(pick(op, ["name", "email"]));
     } catch (error) {
         return handleError(res, BAD_REQUEST, error.message);
     }

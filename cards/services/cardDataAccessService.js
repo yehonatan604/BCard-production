@@ -11,6 +11,8 @@ const create = async (data, opId) => {
         if (!op) throw new Error("Could not find this op in the database");
 
         const card = new Card(data);
+        await card.save();
+
         return Promise.resolve(card);
     } catch (error) {
         return handleError(res, BAD_REQUEST, error.message);
