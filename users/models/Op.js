@@ -16,10 +16,6 @@ const schema = new Schema({
         match: RegExp(emailRegex),
         unique: true,
     },
-    password: {
-        ...DEFAULT_STRING_VALIDATION,
-        match: RegExp(passwordRegex),
-    },
     group: DEFAULT_ID_VALIDATION("group"),
     isVerified: DEFAULT_BOOLEAN_VALIDATION_OPTIONAL,
 });

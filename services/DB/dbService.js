@@ -1,9 +1,10 @@
 import chalk from "chalk";
-import { envService } from "../env/envService.js";
+import { envService } from "../Env/envService.js";
 import { connect } from "mongoose";
 
 const connectToDb = () => {
   const { ENVIRONMENT, MONGO_LOCAL_URI, MONGO_ATLAS_URI } = envService;
+
   const uri = ENVIRONMENT === "development" ? MONGO_LOCAL_URI : MONGO_ATLAS_URI;
   const loc = ENVIRONMENT === "development" ? "Local" : "Atlas";
 

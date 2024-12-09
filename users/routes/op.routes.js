@@ -6,11 +6,13 @@ import { minRole } from "../../middleware/minRole.js";
 import { userRoles } from "../../helpers/roles.js";
 import { isUser } from "../../middleware/isUser.js";
 import { handleError } from "../../helpers/handleError.js";
+import { validate } from "../../middleware/validation.js";
+import { opSchema } from "../validations/registerOpSchema.js";
 
 const router = Router();
 const { CREATED, INTERNAL_SERVER_ERROR } = statusCodes;
 
-router.post("/", async (req, res) => {
+router.post("/", validate(opSchema), async (req, res) => {
     try {
         const op = await register(req.body);
         return res.status(CREATED).send(op);
@@ -19,9 +21,9 @@ router.post("/", async (req, res) => {
     }
 });
 
-router.post("/verify", async (req, res) => {
+router.post("/verify/:token", async (req, res) => {
     try {
-        const token = await verify(req.body);
+        const token = await verify(req.params.token);
         return res.send(token);
     } catch (error) {
         return handleError(res, error.status || INTERNAL_SERVER_ERROR, error.message);
@@ -46,7 +48,7 @@ router.get("/:id", auth, isUser, async (req, res) => {
     }
 });
 
-router.put("/:id", auth, isUser, async (req, res) => {
+router.put("/:id", auth, isUser, validate(opSchema), async (req, res) => {
     try {
         const newUser = await updateOne(req.params.id, req.body);
         return res.send(newUser);

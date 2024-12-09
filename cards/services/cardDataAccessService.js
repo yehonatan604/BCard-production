@@ -5,9 +5,9 @@ import Card from "../models/Card.js";
 
 const { BAD_REQUEST, NOT_FOUND } = statusCodes;
 
-const create = async (data) => {
+const create = async (data, opId) => {
     try {
-        const op = await Op.findById(data.op)._id;
+        const op = await Op.findById(opId)._id;
         if (!op) throw new Error("Could not find this op in the database");
 
         const card = new Card(data);

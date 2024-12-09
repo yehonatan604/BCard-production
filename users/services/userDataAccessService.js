@@ -11,8 +11,11 @@ import Op from "../models/Op.js";
 const { BAD_REQUEST, NOT_FOUND } = statusCodes;
 const { pick } = lodash;
 
-const register = async (data) => {
+const register = async (data, opId) => {
     try {
+        const op = await Op.findById(opId)._id;
+        if (!op) throw new Error("Could not find this op in the database");
+
         const { email } = data;
         let user = await User.findOne({ email });
         if (user) throw new Error("User already registered");

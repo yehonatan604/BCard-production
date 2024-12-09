@@ -6,50 +6,52 @@ import { minRole } from "../../middleware/minRole.js";
 import { userRoles } from "../../helpers/roles.js";
 import { isUser } from "../../middleware/isUser.js";
 import { handleError } from "../../helpers/handleError.js";
+import { validate } from "../../middleware/validation.js";
+import { createCardSchema as schema } from "../validations/cardSchema.js";
 
 const router = Router();
 const { CREATED, INTERNAL_SERVER_ERROR } = statusCodes;
 
-router.post("/", async (req, res) => {
+router.post("/", auth, minRole(userRoles.BIZ), validate(schema), async (req, res) => {
     try {
-        const user = await create(req.body);
-        return res.status(CREATED).send(user);
+        const card = await create(req.body, req.user.op);
+        return res.status(CREATED).send(card);
     } catch (error) {
         return handleError(res, error.status || INTERNAL_SERVER_ERROR, error.message);
     }
 });
 
-router.get("/", auth, minRole(userRoles.SUB_ADMIN), async (req, res) => {
+router.get("/all/:op", async (req, res) => {
     try {
-        const users = await getAll(req.user.op);
-        return res.send(users);
+        const cards = await getAll(req.params.op);
+        return res.send(cards);
     } catch (error) {
         return handleError(res, error.status || INTERNAL_SERVER_ERROR, error.message);
     }
 });
 
-router.get("/:id", auth, isUser, async (req, res) => {
+router.get("/one//:op/:id", auth, isUser, async (req, res) => {
     try {
-        const user = await getOne(req.params.id, req.user.op);
-        return res.send(user);
+        const card = await getOne(req.params.id, req.params.op);
+        return res.send(card);
     } catch (error) {
         return handleError(res, error.status || INTERNAL_SERVER_ERROR, error.message);
     }
 });
 
-router.put("/:id", auth, isUser, async (req, res) => {
+router.put("/:id", auth, isUser, minRole(userRoles.BIZ), validate(schema), async (req, res) => {
     try {
-        const newUser = await updateOne(req.params.id, req.body, req.user.op);
-        return res.send(newUser);
+        const card = await updateOne(req.params.id, req.body, req.user.op);
+        return res.send(card);
     } catch (error) {
         return handleError(res, error.status || INTERNAL_SERVER_ERROR, error.message);
     }
 });
 
-router.delete("/:id", auth, isUser, async (req, res) => {
+router.delete("/:id", auth, isUser, minRole(userRoles.BIZ), async (req, res) => {
     try {
-        const user = await deleteOne(req.params.id, req.user.op);
-        return res.send(user);
+        const card = await deleteOne(req.params.id, req.user.op);
+        return res.send(card);
     } catch (error) {
         return handleError(res, error.status || INTERNAL_SERVER_ERROR, error.message);
     }
