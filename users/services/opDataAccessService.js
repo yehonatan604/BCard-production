@@ -6,19 +6,21 @@ import { registerMail } from "../../services/Mail/mails/register.mail.js";
 import Group from "../models/Group.js";
 import Op from "../models/Op.js";
 import { statusCodes } from "../../helpers/statusCodes.js";
+import UserRole from "../models/UserRole.js";
+import { userRoles } from "../../helpers/roles.js";
 
 const { BAD_REQUEST, NOT_FOUND } = statusCodes;
 const { pick } = lodash;
 
 const register = async (data) => {
     try {
-        const { _id, email, name, classCode } = data;
+        const { _id, email, name, group } = data;
 
         let op = await Op.findOne({ email });
-        if (op) throw new Error("Admin already registered");
+        if (op) throw new Error("Op already registered");
 
-        const classCodeExists = await Group.findOne({ classCode });
-        if (!classCodeExists) throw new Error("Invalid class code");
+        const groupExists = await Group.findOne({ group });
+        if (!groupExists) throw new Error("Invalid Group code");
 
         const emailVerifyToken = generateRegisterToken(_id);
         const mailContent = registerMail(op.email, `${name.first} ${name.last}`, emailVerifyToken);
@@ -27,6 +29,8 @@ const register = async (data) => {
 
         op = new Op(data);
         op = await op.save();
+
+        await new UserRole({ user: op._id, role: userRoles.OP }).save();
 
         return Promise.resolve(pick(op, ["name", "email"]));
     } catch (error) {
@@ -40,7 +44,7 @@ const verify = async (token) => {
         if (!_id) throw new Error("Invalid token");
 
         let op = await Op.findById(_id);
-        if (!op) throw new Error("Could not find this Admin in the database");
+        if (!op) throw new Error("Could not find this Op in the database");
 
         op.isVerified = true;
         op = await op.save();
@@ -63,7 +67,7 @@ const getAll = async () => {
 const getOne = async (userId) => {
     try {
         let op = await Op.findById(userId);
-        if (!op) throw new Error("Could not find this Admin in the database");
+        if (!op) throw new Error("Could not find this Op in the database");
         return Promise.resolve(op);
     } catch (error) {
         return handleError(res, NOT_FOUND, error.message);
@@ -75,7 +79,7 @@ const updateOne = async (userId, normalizedUser) => {
         const op = await Op.findByIdAndUpdate(userId, normalizedUser, {
             new: true,
         });
-        if (!op) throw new Error("Could not find this Admin in the database");
+        if (!op) throw new Error("Could not find this Op in the database");
         return Promise.resolve(op);
     } catch (error) {
         return handleError(res, BAD_REQUEST, error.message);
@@ -86,7 +90,7 @@ const updateOne = async (userId, normalizedUser) => {
 const deleteOne = async (userId) => {
     try {
         const op = await Op.findByIdAndDelete(userId);
-        if (!op) throw new Error("Could not find this Admin in the database");
+        if (!op) throw new Error("Could not find this Op in the database");
 
         op = pick(op, ["name", "email"]);
 
